@@ -351,6 +351,8 @@ class MDF3(MDF_Common):
 
                     stream.seek(address)
 
+                    # print("outer: ", current_address-address, offset)
+
                     if offset < record_offset:
                         delta = record_offset - offset
                         stream.seek(delta, 1)
@@ -401,6 +403,9 @@ class MDF3(MDF_Common):
                     else:
 
                         while size >= split_size - cur_size:
+
+                            # print("inner: ", current_address-address, offset)
+
                             stream.seek(current_address)
                             if data:
                                 data.append(stream.read(split_size - cur_size))
@@ -418,6 +423,8 @@ class MDF3(MDF_Common):
                             size -= split_size - cur_size
                             data = []
                             cur_size = 0
+                        
+                        # print("end of inner loop: ", current_address-address, offset)
 
                     if finished:
                         data = []
@@ -432,6 +439,8 @@ class MDF3(MDF_Common):
                             data.append(stream.read(size))
                         cur_size += size
                         offset += size
+                    
+                    # print("end of outer loop: ", current_address-address, offset)
 
                 if data:
                     data = b"".join(data)
@@ -448,6 +457,8 @@ class MDF3(MDF_Common):
                     has_yielded = True
                 if not has_yielded:
                     yield b"", 0, _count
+                
+                # print("end: ", current_address-address, offset)
 
         else:
             record_id = group.channel_group.record_id
@@ -2981,6 +2992,7 @@ class MDF3(MDF_Common):
             count = 0
             for fragment in data:
                 data_bytes, _offset, _count = fragment
+                # print(len(data_bytes), _offset, _count)
                 info = grp.record[ch_nr]
 
                 bits = channel.bit_count
@@ -3195,6 +3207,7 @@ class MDF3(MDF_Common):
                 count = cycles_nr
             t = arange(count, dtype=float64) + offset // group.channel_group.samples_byte_nr
             metadata = ("time", 1)
+
         else:
             time_ch = group.channels[time_ch_nr]
 
@@ -3210,6 +3223,8 @@ class MDF3(MDF_Common):
                 else:
                     count = cycles_nr
                 t = (arange(count, dtype=float64) + offset // group.channel_group.samples_byte_nr) * sampling_rate
+
+                # print(offset // group.channel_group.samples_byte_nr, count)
             else:
 
                 # get data group record

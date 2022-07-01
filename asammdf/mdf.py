@@ -2947,6 +2947,7 @@ class MDF:
         output_signals = {}
 
         for virtual_group, groups in virtual_groups.items():
+            # print(groups)
             cycles_nr = self._mdf.virtual_groups[virtual_group].cycles_nr
             pairs = [
                 (gp_index, ch_index)
@@ -2974,6 +2975,8 @@ class MDF:
                     record_count=record_count,
                 )
             ):
+                # print([x.name for x in sigs])
+                # print(sigs)
                 if not sigs:
                     break
                 if idx == 0:

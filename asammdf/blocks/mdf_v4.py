@@ -7878,6 +7878,8 @@ class MDF4(MDF_Common):
 
         record_size = record_size or 1
 
+        # print(record_size)
+
         if self._read_fragment_size:
             count = self._read_fragment_size // record_size or 1
         else:
@@ -7908,6 +7910,8 @@ class MDF4(MDF_Common):
                 fragments = [next(stream) for stream in data_streams]
             except:
                 break
+
+            # print(fragments)
 
             _master = self.get_master(index, data=fragments[master_index])
             self._set_temporary_master(_master)
