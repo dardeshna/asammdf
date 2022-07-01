@@ -341,6 +341,8 @@ class MDF3(MDF_Common):
                         address, size = info.address, info.original_size
                         current_address = address
                     except StopIteration:
+                        cur_size -= size
+                        offset -= size
                         break
 
                     if offset + size < record_offset + 1:
@@ -3191,7 +3193,7 @@ class MDF3(MDF_Common):
                 count = len(data_bytes) // group.channel_group.samples_byte_nr
             else:
                 count = cycles_nr
-            t = arange(count, dtype=float64)
+            t = arange(count, dtype=float64) + offset // group.channel_group.samples_byte_nr
             metadata = ("time", 1)
         else:
             time_ch = group.channels[time_ch_nr]
@@ -3203,7 +3205,11 @@ class MDF3(MDF_Common):
                     sampling_rate = time_ch.sampling_rate
                 else:
                     sampling_rate = 1
-                t = arange(cycles_nr, dtype=float64) * sampling_rate
+                if fragment:
+                    count = len(data_bytes) // group.channel_group.samples_byte_nr
+                else:
+                    count = cycles_nr
+                t = (arange(count, dtype=float64) + offset // group.channel_group.samples_byte_nr) * sampling_rate
             else:
 
                 # get data group record
